@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>GEAR HUB</title>
+  <title>GearHub</title>
+  <link rel="stylesheet" href="/css/main.css">
   <style>
     /* Reset-ish */
     * { box-sizing: border-box }
@@ -39,15 +40,15 @@
   <header class="site-header">
     <div class="container" style="display:flex;align-items:center">
       <div class="brand">
-        <div class="logo">Gear HuB</div>
-        <div style="color:#666">취미 활동 용품 리뷰 & 추천</div>
+  <div class="logo">GearHub</div>
+  <div style="color:#666">취미 활동 용품 리뷰 & 추천</div>
       </div>
       <nav class="main-nav">
-        <a href="#">홈</a>
-        <a href="#">도구</a>
-        <a href="#">야외</a>
-        <a href="#">공예</a>
-        <a href="#">문의</a>
+        <a href="/">홈</a>
+        <a href="/category.html?id=tools">도구</a>
+        <a href="/category.html?id=outdoor">야외</a>
+        <a href="/category.html?id=crafts">공예</a>
+        <a href="/mypage.html">내 계정</a>
       </nav>
     </div>
   </header>
@@ -95,10 +96,10 @@
         <div class="card" style="margin-top:18px">
           <h3 style="margin-top:0">인기 카테고리</h3>
           <ul style="padding-left:18px;color:#444">
-            <li><a href="#">공예용 도구</a></li>
-            <li><a href="#">야외/캠핑</a></li>
-            <li><a href="#">사진/촬영</a></li>
-            <li><a href="#">악기</a></li>
+            <li><a href="/category.html?id=crafts">공예용 도구</a></li>
+            <li><a href="/category.html?id=outdoor">야외/캠핑</a></li>
+            <li><a href="/category.html?id=photo">사진/촬영</a></li>
+            <li><a href="/category.html?id=music">악기</a></li>
           </ul>
         </div>
       </div>
@@ -120,7 +121,7 @@
     </div>
 
     <footer class="site-footer">
-      <div class="container">© 2025 취미꾼 — 취미 활동용품 리뷰 & 추천</div>
+  <div class="container">© 2025 GearHub — 취미 활동용품 리뷰 & 추천</div>
     </footer>
   </main>
 </body>

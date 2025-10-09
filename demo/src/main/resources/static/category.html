@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>카테고리 - GearHub</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <style>
+    body{font-family:system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans KR';padding:24px;background:#f5f7fb}
+    .card{max-width:980px;margin:24px auto;background:#fff;padding:18px;border-radius:8px;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2 id="cat-name">카테고리</h2>
+    <div id="cat-desc" style="color:#666"></div>
+    <h3 style="margin-top:12px">상품</h3>
+    <div id="products"></div>
+    <p style="margin-top:16px"><a href="/">홈으로</a></p>
+  </div>
+  <script src="/js/api.js"></script>
+  <script>
+    function q(name){
+      const params = new URLSearchParams(location.search);
+      return params.get(name);
+    }
+    async function load(){
+      const id = q('id');
+      if(!id){ document.getElementById('cat-name').textContent='카테고리 없음'; return; }
+      try{
+        const cat = await apiGet('/categories/' + encodeURIComponent(id));
+        document.getElementById('cat-name').textContent = cat.name;
+        document.getElementById('cat-desc').textContent = cat.description || '';
+        // products placeholder
+        document.getElementById('products').innerHTML = '<p>연관 상품은 API 구현 후 표시됩니다.</p>';
+      }catch(e){ document.getElementById('cat-name').textContent='불러오기 실패'; }
+    }
+    load();
+  </script>
+</body>
+</html>

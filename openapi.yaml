@@ -1,12 +1,14 @@
 openapi: 3.0.3
 info:
-  title: GEAR HUB API
+  title: "GearHub API"
   description: |
     PRD 기반 MVP API — 사용자관리, 메인/콘텐츠, 카테고리, 제품 가격 비교, 관리자(CMS), AI 리뷰 분석
   version: "1.0.0"
 servers:
   - url: http://localhost:8080/api
     description: Local development server (basePath = /api)
+  - url: http://localhost:8080
+    description: Local dev server for GearHub
 
 components:
   securitySchemes:

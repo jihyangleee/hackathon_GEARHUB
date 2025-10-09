@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>마이페이지 - GearHub</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <style>
+    body{font-family:system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans KR';padding:24px;background:#f5f7fb}
+    .card{max-width:780px;margin:24px auto;background:#fff;padding:18px;border-radius:8px;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+    .row{display:flex;gap:16px}
+    .col{flex:1}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>내 계정</h2>
+    <div id="profile"></div>
+    <h3 style="margin-top:18px">내 활동</h3>
+    <div id="activities">(샘플 활동이 여기에 표시됩니다)</div>
+    <p style="margin-top:16px"><a href="/">홈으로</a> | <a id="btn-logout" href="#">로그아웃</a></p>
+  </div>
+  <script src="/js/api.js"></script>
+  <script>
+    async function load(){
+      try{
+        const me = await apiGet('/auth/me');
+        document.getElementById('profile').innerHTML = `<strong>${me.name||me.email}</strong><div style="color:#666">${me.email}</div>`;
+      }catch(e){
+        // not logged in
+        location.href = '/login.html';
+      }
+    }
+    document.getElementById('btn-logout').addEventListener('click', ()=>{localStorage.removeItem('accessToken');location.href='/';});
+    load();
+  </script>
+</body>
+</html>
