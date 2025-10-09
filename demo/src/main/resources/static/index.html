@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>GEAR HUB</title>
+  <style>
+    /* Reset-ish */
+    * { box-sizing: border-box }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', 'Helvetica Neue', Arial; margin:0; color:#222; background:#fafafa }
+    a { color:#0a58ca; text-decoration:none }
+    header.site-header { background:#fff; border-bottom:1px solid #eee; position:sticky; top:0; z-index:50 }
+    .container { max-width:1100px; margin:0 auto; padding:24px }
+    .brand { display:flex; align-items:center; gap:18px }
+    .logo { font-weight:800; font-size:22px }
+    nav.main-nav { margin-left:auto }
+    nav.main-nav a { margin-left:18px; color:#333; font-weight:600 }
+
+    .hero { background:#fff; padding:28px 0; border-bottom:1px solid #eee }
+    .hero h1 { font-size:32px; margin:0 0 8px }
+    .hero p { margin:0; color:#666 }
+
+    .grid { display:grid; grid-template-columns: 1fr 340px; gap:24px; margin-top:20px }
+    .card { background:#fff; padding:18px; border-radius:6px; border:1px solid #e9ecef }
+    .article { display:flex; gap:16px; margin-bottom:18px }
+    .thumb { width:180px; height:110px; background:#ddd; border-radius:6px; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:#666 }
+    .meta { color:#888; font-size:13px }
+    .title { font-size:18px; margin:4px 0 6px }
+
+    aside .widget { margin-bottom:18px }
+    .search { width:100%; padding:8px 10px; border-radius:6px; border:1px solid #ddd }
+
+    footer.site-footer { margin-top:32px; padding:24px 0; color:#666; font-size:14px }
+
+    @media (max-width:900px){ .grid { grid-template-columns:1fr; } .thumb{ width:140px } .logo{font-size:18px} }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container" style="display:flex;align-items:center">
+      <div class="brand">
+        <div class="logo">Gear HuB</div>
+        <div style="color:#666">취미 활동 용품 리뷰 & 추천</div>
+      </div>
+      <nav class="main-nav">
+        <a href="#">홈</a>
+        <a href="#">도구</a>
+        <a href="#">야외</a>
+        <a href="#">공예</a>
+        <a href="#">문의</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h1>최신 리뷰 · 취미 활동에 딱 맞는 장비만 소개합니다</h1>
+      <p>검증된 사용 후기로 골라본 추천 목록 — 초보자부터 마니아까지.</p>
+    </section>
+
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h2 style="margin-top:0">추천 리뷰</h2>
+
+          <article class="article">
+            <div class="thumb">이미지</div>
+            <div>
+              <div class="meta">공예 · 2025-06-16</div>
+              <div class="title"><a href="#">핸드메이드용 미니 드릴, 우리가 선택한 최고의 모델</a></div>
+              <p style="margin:0;color:#555">정밀 작업에 적합한 미니 드릴을 6주간 테스트하고 성능/내구성/가격 대비를 비교했습니다.</p>
+            </div>
+          </article>
+
+          <article class="article">
+            <div class="thumb">이미지</div>
+            <div>
+              <div class="meta">야외 · 2025-06-10</div>
+              <div class="title"><a href="#">휴대용 캠핑 의자: 편안함과 휴대성의 균형</a></div>
+              <p style="margin:0;color:#555">5가지 캠핑 의자를 비교해 최적의 선택을 추천합니다.</p>
+            </div>
+          </article>
+
+          <article class="article">
+            <div class="thumb">이미지</div>
+            <div>
+              <div class="meta">도구 · 2025-05-28</div>
+              <div class="title"><a href="#">초보자용 목공 세트: 무엇을 사야 할까?</a></div>
+              <p style="margin:0;color:#555">처음 목공을 시작하는 분들을 위한 필수 도구와 추천 조합을 제안합니다.</p>
+            </div>
+          </article>
+
+        </div>
+
+        <div class="card" style="margin-top:18px">
+          <h3 style="margin-top:0">인기 카테고리</h3>
+          <ul style="padding-left:18px;color:#444">
+            <li><a href="#">공예용 도구</a></li>
+            <li><a href="#">야외/캠핑</a></li>
+            <li><a href="#">사진/촬영</a></li>
+            <li><a href="#">악기</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <aside>
+        <div class="widget card">
+          <input class="search" placeholder="검색어를 입력하세요">
+        </div>
+        <div class="widget card">
+          <h4 style="margin-top:0">이달의 추천</h4>
+          <div style="color:#444">취미꾼 에디터가 직접 사용해보고 골랐습니다.</div>
+        </div>
+        <div class="widget card">
+          <h4 style="margin-top:0">뉴스레터</h4>
+          <p style="margin:0 0 8px">신제품 및 할인 정보를 이메일로 받아보세요.</p>
+          <button style="background:#000;color:#fff;padding:8px 12px;border-radius:6px;border:none">구독하기</button>
+        </div>
+      </aside>
+    </div>
+
+    <footer class="site-footer">
+      <div class="container">© 2025 취미꾼 — 취미 활동용품 리뷰 & 추천</div>
+    </footer>
+  </main>
+</body>
+</html>

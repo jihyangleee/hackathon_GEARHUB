@@ -1,0 +1,695 @@
+openapi: 3.0.3
+info:
+  title: GEAR HUB API
+  description: |
+    PRD 기반 MVP API — 사용자관리, 메인/콘텐츠, 카테고리, 제품 가격 비교, 관리자(CMS), AI 리뷰 분석
+  version: "1.0.0"
+servers:
+  - url: http://localhost:8080/api
+    description: Local development server (basePath = /api)
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - message
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        joinedAt:
+          type: string
+          format: date-time
+
+    SignupRequest:
+      type: object
+      required:
+        - email
+        - password
+        - name
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        name:
+          type: string
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        tokenType:
+          type: string
+          example: Bearer
+        expiresIn:
+          type: integer
+          description: seconds
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+        slug:
+          type: string
+        name:
+          type: string
+        iconUrl:
+          type: string
+          format: uri
+
+    ProductSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        shortDescription:
+          type: string
+        imageUrl:
+          type: string
+          format: uri
+        rank:
+          type: string
+          description: "e.g. Our Pick, Runner-Up, Best Value"
+
+    Product:
+      allOf:
+        - $ref: '#/components/schemas/ProductSummary'
+        - type: object
+          properties:
+            details:
+              type: string
+            aiSummary:
+              type: object
+              properties:
+                sentiment:
+                  type: string
+                positiveKeywords:
+                  type: array
+                  items:
+                    type: string
+                negativeKeywords:
+                  type: array
+                  items:
+                    type: string
+            categories:
+              type: array
+              items:
+                $ref: '#/components/schemas/Category'
+
+    PriceEntry:
+      type: object
+      properties:
+        marketplace:
+          type: string
+        productUrl:
+          type: string
+          format: uri
+        price:
+          type: number
+          format: double
+        shipping:
+          type: number
+          format: double
+        finalPrice:
+          type: number
+          format: double
+        lastUpdated:
+          type: string
+          format: date-time
+
+    PriceComparisonResponse:
+      type: object
+      properties:
+        productId:
+          type: string
+        bestPrice:
+          $ref: '#/components/schemas/PriceEntry'
+        prices:
+          type: array
+          items:
+            $ref: '#/components/schemas/PriceEntry'
+        priceAsOf:
+          type: string
+          format: date-time
+
+    Content:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+        imageUrl:
+          type: string
+          format: uri
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+        publishedAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateContentRequest:
+      type: object
+      required:
+        - title
+        - body
+      properties:
+        title:
+          type: string
+        body:
+          type: string
+        imageUrl:
+          type: string
+          format: uri
+        categories:
+          type: array
+          items:
+            type: string
+            description: category id
+
+    AIReviewAnalyzeRequest:
+      type: object
+      required:
+        - sourceUrls
+      properties:
+        productId:
+          type: string
+          nullable: true
+        sourceUrls:
+          type: array
+          items:
+            type: string
+            format: uri
+        maxItems:
+          type: integer
+          default: 100
+
+    AIReviewAnalyzeResponse:
+      type: object
+      properties:
+        analysisId:
+          type: string
+        productId:
+          type: string
+          nullable: true
+        sentimentSummary:
+          type: object
+          properties:
+            overall:
+              type: string
+            positiveRatio:
+              type: number
+            negativeRatio:
+              type: number
+        topPositiveKeywords:
+          type: array
+          items:
+            type: string
+        topNegativeKeywords:
+          type: array
+          items:
+            type: string
+        analyzedAt:
+          type: string
+          format: date-time
+
+  parameters:
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+    sizeParam:
+      name: size
+      in: query
+      schema:
+        type: integer
+        default: 20
+    qParam:
+      name: q
+      in: query
+      schema:
+        type: string
+
+paths:
+  /auth/signup:
+    post:
+      summary: 회원가입
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupRequest'
+      responses:
+        '201':
+          description: 회원 생성 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: 입력 오류
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/login:
+    post:
+      summary: 로그인 (토큰 발급)
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: 인증 성공 (JWT)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: 인증 실패
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/me:
+    get:
+      summary: 내 정보 조회
+      tags: [Auth]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 사용자 정보
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: 인증 필요
+
+  /home:
+    get:
+      summary: 메인 페이지 데이터 (Hero, Today's updates, Weekly Hot, Categories)
+      tags: [Public]
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/sizeParam'
+      responses:
+        '200':
+          description: 메인 페이지용 데이터
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  hero:
+                    type: object
+                    properties:
+                      title:
+                        type: string
+                      subtitle:
+                        type: string
+                      imageUrl:
+                        type: string
+                        format: uri
+                      contentId:
+                        type: string
+                  todaysUpdates:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Content'
+                  weeklyHot:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProductSummary'
+                  categories:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Category'
+
+  /categories:
+    get:
+      summary: 모든 카테고리 조회
+      tags: [Public]
+      responses:
+        '200':
+          description: 카테고리 목록
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+
+  /categories/{categoryId}:
+    get:
+      summary: 카테고리 상세(제품 목록)
+      tags: [Public]
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/sizeParam'
+      responses:
+        '200':
+          description: 카테고리내 추천 제품 목록
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  products:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProductSummary'
+
+  /products:
+    get:
+      summary: 제품 검색
+      tags: [Public]
+      parameters:
+        - $ref: '#/components/parameters/qParam'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/sizeParam'
+      responses:
+        '200':
+          description: 검색 결과
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProductSummary'
+
+  /products/{productId}:
+    get:
+      summary: 제품 상세 정보 (추천 근거, AI 요약 등)
+      tags: [Public]
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 제품 상세
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: 제품 없음
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /products/{productId}/prices:
+    get:
+      summary: 제품별 실시간 가격 비교
+      tags: [Public]
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 가격 비교 결과 (정렬: finalPrice asc)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriceComparisonResponse'
+        '404':
+          description: 제품 없음
+
+  /admin/products:
+    get:
+      summary: 관리자용 제품 목록
+      tags: [Admin]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 관리자 제품 목록
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+    post:
+      summary: 관리자용 제품 생성
+      tags: [Admin]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Product'
+      responses:
+        '201':
+          description: 생성됨
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '401':
+          description: 인증 필요
+
+  /admin/products/{productId}:
+    put:
+      summary: 관리자용 제품 수정
+      tags: [Admin]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: 수정 완료
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+    delete:
+      summary: 관리자용 제품 삭제
+      tags: [Admin]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: 삭제 완료
+        '401':
+          description: 인증 필요
+
+  /admin/contents:
+    get:
+      summary: 관리자용 콘텐츠 목록
+      tags: [Admin]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 콘텐츠 목록
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Content'
+    post:
+      summary: 관리자용 콘텐츠 생성
+      tags: [Admin]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateContentRequest'
+      responses:
+        '201':
+          description: 생성됨
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Content'
+
+  /admin/contents/{contentId}:
+    put:
+      summary: 관리자용 콘텐츠 수정
+      tags: [Admin]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: contentId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateContentRequest'
+      responses:
+        '200':
+          description: 수정 완료
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Content'
+    delete:
+      summary: 관리자용 콘텐츠 삭제
+      tags: [Admin]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: contentId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: 삭제 완료
+
+  /ai/reviews/analyze:
+    post:
+      summary: AI 리뷰 분석 실행 (외부 리뷰 수집 및 감성/키워드 추출)
+      tags: [AI]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIReviewAnalyzeRequest'
+      responses:
+        '202':
+          description: 분석 작업 수락(비동기 처리 추천)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  analysisId:
+                    type: string
+                  status:
+                    type: string
+                    example: queued
+        '400':
+          description: 요청 오류
+
+  /ai/reviews/{analysisId}:
+    get:
+      summary: AI 분석 결과 조회
+      tags: [AI]
+      parameters:
+        - name: analysisId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 분석 결과
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIReviewAnalyzeResponse'
+        '404':
+          description: 결과 없음
+
+security:
+  - bearerAuth: []
