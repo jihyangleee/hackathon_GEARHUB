@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>카테고리 - GearHub</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <style>
+    body{font-family:system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans KR';padding:24px;background:#f5f7fb}
+    .card{max-width:980px;margin:24px auto;background:#fff;padding:18px;border-radius:8px;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+    
+    /* 상단 큰 카테고리 바 */
+    .cat-topnav{
+      margin:10px -18px 8px; padding:8px 18px;
+      border-bottom:1px solid #e9ecef;
+      display:flex; gap:14px; align-items:center;
+      overflow-x:auto; scrollbar-width:thin;
+    }
+    .cat-topnav a{
+      flex:0 0 auto;
+      text-decoration:none; font-weight:700; font-size:15px;
+      color:#333; padding:8px 10px; border-radius:8px;
+    }
+    .cat-topnav a[aria-current="true"]{
+      background:#eef5ff; color:#0a58ca; border:1px solid #0a58ca;
+    }
+
+    /* 가로형 서브카테고리 바 */
+    .subnav {
+      position: sticky; top: 0; z-index: 40;
+      background:#fff; border-bottom:1px solid #e9ecef;
+      margin:12px -18px 12px; padding:10px 18px;
+      display:flex; gap:18px; flex-wrap:wrap; align-items:center;
+    }
+    .subnav .label{ color:#888; font-size:13px; margin-right:6px }
+    .subnav a{
+      font-size:14px; color:#333; font-weight:600; text-decoration:none;
+      padding:6px 10px; border-radius:999px; border:1px solid #eee;
+    }
+    .subnav a[aria-current="true"]{
+      border-color:#0a58ca; color:#0a58ca; background:#eef5ff;
+    }
+
+    /* 5열 상품 그리드 */
+    .prod-grid{
+      display:grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap:14px;
+    }
+    @media (max-width:1100px){ .prod-grid{ grid-template-columns: repeat(4,1fr) } }
+    @media (max-width:900px) { .prod-grid{ grid-template-columns: repeat(3,1fr) } }
+    @media (max-width:640px) { .prod-grid{ grid-template-columns: repeat(2,1fr) } }
+
+    .product{
+      border:1px solid #e9ecef; border-radius:8px; background:#fff; overflow:hidden;
+      display:flex; flex-direction:column;
+    }
+    .product .thumb{
+      aspect-ratio:1/1; background:#f2f4f7; display:flex; align-items:center; justify-content:center; color:#999;
+    }
+    .product .body{ padding:10px }
+    .product .title{ font-size:14px; font-weight:700; line-height:1.35; margin:0 0 6px }
+    .product .meta{ font-size:12px; color:#666 }
+    .product .price{ font-weight:800; margin-top:6px }
+  </style>
+</head>
+<body>
+  <div class="card">
+  <h2 id="cat-name">카테고리</h2>
+  <div id="cat-desc" style="color:#666"></div>
+  <!-- 큰 카테고리 상단 네비 -->
+  <nav class="cat-topnav" id="catTopnav" aria-label="큰 카테고리"></nav>
+  <!-- 가로형 소카테고리 바 -->
+  <nav class="subnav" id="subnav" aria-label="하위 카테고리" style="display:none">
+    <span class="label">세부 카테고리</span>
+  </nav>
+  <h3 style="margin-top:12px">상품</h3>
+  <div id="products" class="prod-grid"></div>
+
+  <p style="margin-top:16px"><a href="index.html">홈으로</a></p>
+</div>
+
+  <script src="/js/api.js"></script>
+    <script>
+      // URL 파라미터 추출 함수
+      function q(name) {
+        const params = new URLSearchParams(location.search);
+        return params.get(name);
+      }
+
+      /* ------------------------------ 큰 카테고리 목록 ------------------------------ */
+      const BIGCATS = [
+        {id:'tools',   name:'도구'},
+        {id:'outdoor', name:'야외'},
+        {id:'crafts',  name:'공예'},
+        {id:'photo',   name:'사진/촬영'},
+        {id:'music',   name:'음악'},
+        {id:'bike',    name:'자전거'},
+        {id:'fish',    name:'낚시'},
+        {id:'electro', name:'DIY 전자'},
+        {id:'kitchen', name:'키친/베이킹'}
+      ];
+
+      function renderTopnav(activeId){
+        const host = document.getElementById('catTopnav');
+        host.innerHTML = BIGCATS.map(c =>
+          `<a href="?id=${encodeURIComponent(c.id)}"
+            ${c.id === activeId ? 'aria-current="true"' : ''}>${c.name}</a>`
+        ).join('');
+      }
+
+      /* ------------------------------ 서브카테고리 목록 ------------------------------ */
+      const SUBCATS = {
+        tools:[{id:'hand-tools',name:'수공구'},{id:'power-tools',name:'전동 공구'},{id:'measuring',name:'측정/정밀'},{id:'safety',name:'안전/보호'}],
+        outdoor:[{id:'camp',name:'캠핑'},{id:'hike',name:'등산/트레킹'},{id:'cook',name:'아웃도어 취사'},{id:'light',name:'조명/전원'}],
+        crafts:[{id:'wood',name:'목공'},{id:'leather',name:'가죽'},{id:'metal',name:'금속/주조'},{id:'model',name:'모형/프라모델'}],
+        photo:[{id:'camera',name:'카메라/렌즈'},{id:'lighting',name:'조명/리그'},{id:'audio',name:'오디오/마이크'}],
+        music:[{id:'guitar',name:'기타/베이스'},{id:'keys',name:'건반/신디'},{id:'recording',name:'레코딩 장비'}],
+        bike:[{id:'road',name:'로드/그래블'},{id:'mtb',name:'MTB'},{id:'accessory',name:'액세서리'}],
+        fish:[{id:'rod',name:'로드/릴'},{id:'lure',name:'루어/채비'},{id:'wear',name:'의류/보조장비'}],
+        electro:[{id:'arduino',name:'아두이노/MCU'},{id:'solder',name:'납땜/공구'},{id:'sensor',name:'센서/모듈'}],
+        kitchen:[{id:'bake',name:'오븐/베이킹툴'},{id:'knife',name:'칼/도마'},{id:'brew',name:'커피/브루잉'}]
+      };
+
+      function renderSubnav({ categoryId, activeSubId }){
+        const host = document.getElementById('subnav');
+        const items = SUBCATS[categoryId] || [];
+        if(!items.length){ host.style.display='none'; return; }
+        host.style.display='flex';
+        host.innerHTML = items.map(s =>
+          `<a href="?id=${encodeURIComponent(categoryId)}&sub=${encodeURIComponent(s.id)}"
+            ${activeSubId===s.id?'aria-current="true"':''}>${s.name}</a>`
+        ).join('');
+      }
+
+      /* ------------------------------ 상품 불러오기 ------------------------------ */
+      async function fetchProducts({ categoryId, subCategoryId, page=1, size=20 }){
+        const list = [];
+        try {
+          const internal = await apiGet(`/products?category=${encodeURIComponent(categoryId||'')}&sub=${encodeURIComponent(subCategoryId||'')}&page=${page}&size=${size}`);
+          (internal?.items||[]).forEach(p=>{
+            list.push({
+              id:`in-${p.id}`, title:p.title, price:p.price, image:p.image, source:'내부',
+              url:`/product.html?id=${encodeURIComponent(p.id)}`
+            });
+          });
+        } catch(e){ /* 내부 API 없으면 무시 */ }
+
+        // 외부 더미 데이터
+        if(list.length < size){
+          const remain = size - list.length;
+          for(let i=0;i<remain;i++){
+            list.push({
+              id:`extA-${i}`,
+              title:`[제휴A] ${(subCategoryId||categoryId||'카테고리')} 상품 ${i+1}`,
+              price:(Math.floor(Math.random()*9)+1)*10000,
+              image:null, source:'제휴A', url:'#'
+            });
+          }
+        }
+        return list;
+      }
+
+      function renderProducts(list){
+        const box = document.getElementById('products');
+        if(!list?.length){ box.innerHTML = '<p>표시할 상품이 없습니다.</p>'; return; }
+        box.innerHTML = list.map(p=>`
+          <a class="product" href="${p.url}" target="${p.url==='#'?'_self':'_blank'}" rel="noopener">
+            <div class="thumb">${p.image? `<img src="${p.image}" alt="" style="width:100%;height:100%;object-fit:cover">` : '이미지'}</div>
+            <div class="body">
+              <div class="title">${p.title}</div>
+              <div class="meta">${p.source}</div>
+              <div class="price">${(p.price||0).toLocaleString()}원</div>
+            </div>
+          </a>
+        `).join('');
+      }
+
+      /* ------------------------------ 페이지 로드 ------------------------------ */
+      async function load(){
+        const categoryId = q('id') || 'tools';
+        const subId = q('sub') || null;
+
+        // 카테고리 제목/설명
+        try{
+          const cat = await apiGet('/categories/' + encodeURIComponent(categoryId));
+          document.getElementById('cat-name').textContent = cat.name || '카테고리';
+          document.getElementById('cat-desc').textContent = cat.description || '';
+        }catch(e){
+          const names = {tools:'도구',outdoor:'야외',crafts:'공예',photo:'사진/촬영',music:'음악',bike:'자전거',fish:'낚시',electro:'DIY 전자',kitchen:'키친/베이킹'};
+          document.getElementById('cat-name').textContent = names[categoryId] || '카테고리';
+          document.getElementById('cat-desc').textContent = '';
+        }
+
+        // 큰 카테고리/서브카테고리/상품 표시
+        renderTopnav(categoryId);
+        renderSubnav({ categoryId, activeSubId: subId });
+        const products = await fetchProducts({ categoryId, subCategoryId: subId, page:1, size:20 });
+        renderProducts(products);
+      }
+
+      load();
+    </script>
+
+</body>
+</html>

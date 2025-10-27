@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>GearHub</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <style>
+    /* Reset-ish */
+    * { box-sizing: border-box }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', 'Helvetica Neue', Arial; margin:0; color:#222; background:#fafafa }
+    a { color:#0a58ca; text-decoration:none }
+    header.site-header { background:#fff; border-bottom:1px solid #eee; position:sticky; top:0; z-index:50 }
+    .container { max-width:1100px; margin:0 auto; padding:24px }
+    .brand { display:flex; align-items:center; gap:18px }
+    .logo { font-weight:800; font-size:22px }
+    nav.main-nav { margin-left:auto }
+    nav.main-nav a { margin-left:18px; color:#333; font-weight:600 }
+
+    .hero { background:#fff; padding:28px 0; border-bottom:1px solid #eee }
+    .hero h1 { font-size:32px; margin:0 0 8px }
+    .hero p { margin:0; color:#666 }
+
+    .grid { display:grid; grid-template-columns: 1fr 340px; gap:24px; margin-top:20px }
+    .card { background:#fff; padding:18px; border-radius:6px; border:1px solid #e9ecef }
+    .article { display:flex; gap:16px; margin-bottom:18px }
+    .thumb { width:180px; height:110px; background:#ddd; border-radius:6px; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:#666 }
+    .meta { color:#888; font-size:13px }
+    .title { font-size:18px; margin:4px 0 6px }
+
+    aside .widget { margin-bottom:18px }
+    .search { width:100%; padding:8px 10px; border-radius:6px; border:1px solid #ddd }
+
+    footer.site-footer { margin-top:32px; padding:24px 0; color:#666; font-size:14px }
+
+    @media (max-width:900px){ .grid { grid-template-columns:1fr; } .thumb{ width:140px } .logo{font-size:18px} }
+    
+    :root{ --header-h: 64px; } 
+
+    .cat-panel{
+      position: fixed;
+      left: 0;
+      top: var(--header-h);        
+      width: 100%;
+      height: 50vh;                
+      background: #fff;
+      border-bottom: 1px solid #eee;
+      box-shadow: 0 12px 30px rgba(0,0,0,.08);
+      transform: translateY(-100%);
+      transition: transform .28s ease;
+      z-index: 20;                 
+    }
+    .cat-panel.open{ transform: translateY(0); }
+
+    .cat-panel .inner{
+      max-width:1100px; margin:0 auto; padding:18px 24px;
+      display:grid; grid-template-columns:repeat(3,1fr); gap:18px;
+      height:100%; overflow:auto;
+    }
+    @media (max-width:900px){ .cat-panel .inner{ grid-template-columns:1fr } }
+
+    .cat-block h3{ margin:0 0 10px; font-weight:800; font-size:20px; color:#111 }
+    .cat-block ul{ margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:8px }
+    .cat-block a{ color:#333; font-weight:600; text-decoration:none }
+    .cat-block a:hover{ text-decoration:underline }
+
+    /* 패널 밖(아래 반 화면) 이동 시 닫히도록 감지 */
+    .cat-backdrop{
+      position:fixed; left:0; top:calc(var(--header-h) + 50vh);
+      width:100%; height:calc(100vh - var(--header-h) - 50vh);
+      background:transparent; z-index:10; display:none;
+    }
+    .cat-backdrop.show{ display:block }
+  </style>
+
+</head>
+<body>
+  <header class="site-header">
+    <div class="container" style="display:flex;align-items:center">
+      <div class="brand">
+  <div class="logo">GearHub</div>
+  <div style="color:#666">취미 활동 용품 리뷰 & 추천</div>
+      </div>
+      <nav class="main-nav">
+        <a href="index.html">홈</a>
+        <a href="category.html" id="catOpenLink" aria-controls="catPanel" aria-expanded="false">카테고리</a>
+        <a href="login.html" id="authLink">로그인</a>
+      </nav>
+      </div>
+  </header>
+  <section class="cat-panel" id="catPanel" aria-hidden="true">
+  <div class="inner">
+    <!-- 도구 -->
+    <div class="cat-block">
+      <h3>도구</h3>
+      <ul>
+        <li><a href="#" data-id="hand-tools">수공구</a></li>
+        <li><a href="#" data-id="power-tools">전동 공구</a></li>
+        <li><a href="#" data-id="measuring">측정/정밀</a></li>
+        <li><a href="#" data-id="safety">안전/보호</a></li>
+      </ul>
+    </div>
+    <!-- 야외 -->
+    <div class="cat-block">
+      <h3>야외</h3>
+      <ul>
+        <li><a href="#" data-id="camp">캠핑</a></li>
+        <li><a href="#" data-id="hike">등산/트레킹</a></li>
+        <li><a href="#" data-id="cook">아웃도어 취사</a></li>
+        <li><a href="#" data-id="light">조명/전원</a></li>
+      </ul>
+    </div>
+    <!-- 공예 -->
+    <div class="cat-block">
+      <h3>공예</h3>
+      <ul>
+        <li><a href="#" data-id="wood">목공</a></li>
+        <li><a href="#" data-id="leather">가죽</a></li>
+        <li><a href="#" data-id="metal">금속/주조</a></li>
+        <li><a href="#" data-id="model">모형/프라모델</a></li>
+      </ul>
+    </div>
+    <!-- 확장 카테고리 -->
+    <div class="cat-block"><h3>사진/촬영</h3><ul>
+      <li><a href="#" data-id="camera">카메라/렌즈</a></li>
+      <li><a href="#" data-id="lighting">조명/리그</a></li>
+      <li><a href="#" data-id="audio">오디오/마이크</a></li>
+    </ul></div>
+    <div class="cat-block"><h3>음악</h3><ul>
+      <li><a href="#" data-id="guitar">기타/베이스</a></li>
+      <li><a href="#" data-id="keys">건반/신디</a></li>
+      <li><a href="#" data-id="recording">레코딩 장비</a></li>
+    </ul></div>
+    <div class="cat-block"><h3>자전거</h3><ul>
+      <li><a href="#" data-id="road">로드/그래블</a></li>
+      <li><a href="#" data-id="mtb">MTB</a></li>
+      <li><a href="#" data-id="accessory">액세서리</a></li>
+    </ul></div>
+    <div class="cat-block"><h3>낚시</h3><ul>
+      <li><a href="#" data-id="rod">로드/릴</a></li>
+      <li><a href="#" data-id="lure">루어/채비</a></li>
+      <li><a href="#" data-id="wear">의류/보조장비</a></li>
+    </ul></div>
+    <div class="cat-block"><h3>DIY 전자</h3><ul>
+      <li><a href="#" data-id="arduino">아두이노/MCU</a></li>
+      <li><a href="#" data-id="solder">납땜/공구</a></li>
+      <li><a href="#" data-id="sensor">센서/모듈</a></li>
+    </ul></div>
+    <div class="cat-block"><h3>키친/베이킹</h3><ul>
+      <li><a href="#" data-id="bake">오븐/베이킹툴</a></li>
+      <li><a href="#" data-id="knife">칼/도마</a></li>
+      <li><a href="#" data-id="brew">커피/브루잉</a></li>
+    </ul></div>
+  </div>
+</section>
+<div class="cat-backdrop" id="catBackdrop" aria-hidden="true"></div>
+
+
+  <main class="container">
+    <section class="hero">
+      <h1>최신 리뷰 · 취미 활동에 딱 맞는 장비만 소개합니다</h1>
+      <p>검증된 사용 후기로 골라본 추천 목록 — 초보자부터 마니아까지.</p>
+    </section>
+
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h2 style="margin-top:0">추천 리뷰</h2>
+
+          <article class="article">
+            <div class="thumb">이미지</div>
+            <div>
+              <div class="meta">공예 · 2025-06-16</div>
+              <div class="title"><a href="#">핸드메이드용 미니 드릴, 우리가 선택한 최고의 모델</a></div>
+              <p style="margin:0;color:#555">정밀 작업에 적합한 미니 드릴을 6주간 테스트하고 성능/내구성/가격 대비를 비교했습니다.</p>
+            </div>
+          </article>
+
+          <article class="article">
+            <div class="thumb">이미지</div>
+            <div>
+              <div class="meta">야외 · 2025-06-10</div>
+              <div class="title"><a href="#">휴대용 캠핑 의자: 편안함과 휴대성의 균형</a></div>
+              <p style="margin:0;color:#555">5가지 캠핑 의자를 비교해 최적의 선택을 추천합니다.</p>
+            </div>
+          </article>
+
+          <article class="article">
+            <div class="thumb">이미지</div>
+            <div>
+              <div class="meta">도구 · 2025-05-28</div>
+              <div class="title"><a href="#">초보자용 목공 세트: 무엇을 사야 할까?</a></div>
+              <p style="margin:0;color:#555">처음 목공을 시작하는 분들을 위한 필수 도구와 추천 조합을 제안합니다.</p>
+            </div>
+          </article>
+
+        </div>
+
+        <div class="card" style="margin-top:18px">
+          <h3 style="margin-top:0">인기 카테고리</h3>
+          <ul style="padding-left:18px;color:#444">
+            <li><a href="/category.html?id=crafts">공예용 도구</a></li>
+            <li><a href="/category.html?id=outdoor">야외/캠핑</a></li>
+            <li><a href="/category.html?id=photo">사진/촬영</a></li>
+            <li><a href="/category.html?id=music">악기</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <aside>
+        <div class="widget card">
+          <input class="search" placeholder="검색어를 입력하세요">
+        </div>
+        <div class="widget card">
+          <h4 style="margin-top:0">이달의 추천</h4>
+          <div style="color:#444">취미꾼 에디터가 직접 사용해보고 골랐습니다.</div>
+        </div>
+        <div class="widget card">
+          <h4 style="margin-top:0">뉴스레터</h4>
+          <p style="margin:0 0 8px">신제품 및 할인 정보를 이메일로 받아보세요.</p>
+          <button style="background:#000;color:#fff;padding:8px 12px;border-radius:6px;border:none">구독하기</button>
+        </div>
+      </aside>
+    </div>
+
+    <footer class="site-footer">
+  <div class="container">© 2025 GearHub — 취미 활동용품 리뷰 & 추천</div>
+    </footer>
+  </main>
+  
+
+<script>
+  (function(){
+    const header   = document.querySelector('.site-header');
+    const openLink = document.getElementById('catOpenLink');
+    const panel    = document.getElementById('catPanel');
+    const backdrop = document.getElementById('catBackdrop');
+
+    function syncHeaderHeight(){
+      const h = header ? header.getBoundingClientRect().height : 64;
+      document.documentElement.style.setProperty('--header-h', `${Math.round(h)}px`);
+    }
+    window.addEventListener('load', syncHeaderHeight);
+    window.addEventListener('resize', syncHeaderHeight);
+    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(syncHeaderHeight).catch(()=>{}); }
+
+    function openPanel(){
+      syncHeaderHeight();
+      panel.classList.add('open');
+      backdrop.classList.add('show');
+      panel.setAttribute('aria-hidden','false');
+      openLink?.setAttribute('aria-expanded','true');
+    }
+    function closePanel(){
+      panel.classList.remove('open');
+      backdrop.classList.remove('show');
+      panel.setAttribute('aria-hidden','true');
+      openLink?.setAttribute('aria-expanded','false');
+    }
+
+    
+    openLink?.addEventListener('mouseenter', openPanel);
+    backdrop?.addEventListener('mouseenter', closePanel);
+    window.addEventListener('keydown', e => { if(e.key === 'Escape') closePanel(); });
+    panel.addEventListener('click', e => {
+      const a = e.target.closest('a[data-id]');
+      if(!a) return;
+      e.preventDefault();
+      const id = a.dataset.id;
+      location.href = `category.html?id=${encodeURIComponent(id)}`;
+    });
+
+  })();
+
+  (function(){
+    const authLink = document.getElementById('authLink');
+
+    function refreshAuthLink(){
+      const token = localStorage.getItem('accessToken');
+      if(token){
+        authLink.textContent = '내 계정';
+        authLink.href = 'mypage.html';
+        authLink.setAttribute('data-state','logged-in');
+      }else{
+        authLink.textContent = '로그인';
+        authLink.href = 'login.html';
+        authLink.setAttribute('data-state','logged-out');
+      }
+    }
+
+    refreshAuthLink();
+    // 다른 탭/창에서 로그인 상태가 바뀌었을 때도 즉시 반영
+    window.addEventListener('storage', (e)=>{ if(e.key==='accessToken') refreshAuthLink(); });
+  })();
+</script>
+
+</body>
+
+</html>
