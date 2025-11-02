@@ -1,0 +1,54 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <title th:text="${product.title}">Product</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <div class="product-detail">
+    <img th:src="${product.imageUrl}" alt="" />
+    <h1 th:text="${product.title}"></h1>
+    <p th:text="${product.description}"></p>
+    <div class="price">$<span th:text="${product.price}"></span></div>
+    <div class="product-actions">
+      <form th:action="@{/favorite/toggle}" method="post">
+        <input type="hidden" name="productId" th:value="${product.id}" />
+        <button type="submit">Toggle Favorite</button>
+      </form>
+    </div>
+  </div>
+
+  <section class="reviews">
+    <h2>Reviews</h2>
+    <div th:if="${#lists.isEmpty(reviews)}">No reviews yet.</div>
+    <div th:each="r : ${reviews}">
+  <strong th:text="${r.user.name}"></strong>
+      <span th:text="${r.rating}"></span>
+      <p th:text="${r.content}"></p>
+    </div>
+  <div class="add-review" th:if="${session.user != null}">
+      <h3>Add a review</h3>
+  <form th:action="@{'/product/' + ${product.id} + '/review'}" method="post">
+        <div>
+          <label>Rating</label>
+          <select name="rating">
+            <option value="5">5</option>
+            <option value="4">4</option>
+            <option value="3">3</option>
+            <option value="2">2</option>
+            <option value="1">1</option>
+          </select>
+        </div>
+        <div>
+          <label>Review</label>
+          <textarea name="content" rows="4"></textarea>
+        </div>
+        <div>
+          <button type="submit">Submit Review</button>
+        </div>
+      </form>
+    </div>
+  </section>
+</body>
+</html>

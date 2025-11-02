@@ -1,0 +1,37 @@
+package com.example.demo.controller;
+
+import com.example.demo.entity.Article;
+import com.example.demo.repository.ArticleRepository;
+import com.example.demo.repository.EquipmentRepository;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+@Controller
+public class ArticleController {
+
+    private final ArticleRepository articleRepository;
+    private final EquipmentRepository equipmentRepository;
+    private final com.example.demo.service.SummarizationService summarizationService;
+
+    public ArticleController(ArticleRepository articleRepository, EquipmentRepository equipmentRepository,
+                             com.example.demo.service.SummarizationService summarizationService) {
+        this.articleRepository = articleRepository;
+        this.equipmentRepository = equipmentRepository;
+        this.summarizationService = summarizationService;
+    }
+
+    @GetMapping("/article/{slug}")
+    public String viewArticle(@PathVariable("slug") String slug, Model model) {
+        Article article = articleRepository.findBySlug(slug).orElse(null);
+        if (article == null) return "redirect:/";
+        model.addAttribute("article", article);
+        // request a short summary (uses Gemini if configured, otherwise fallback)
+        String summary = summarizationService.summarize(article.getContent());
+        model.addAttribute("summary", summary);
+        // related equipment for this article
+        model.addAttribute("equipments", equipmentRepository.findByArticle(article));
+        return "article";
+    }
+}

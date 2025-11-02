@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>gear</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <div class="left">
+          <a class="logo" href="/">gear</a>
+          <div class="category-select">
+            <select onchange="location = this.value">
+              <option value="/">카테고리</option>
+              <option th:each="c : ${categories}" th:value="@{'/category/' + ${c.slug}}" th:text="${c.name}">카테고리</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="center">
+          <form class="search-form" action="/search" method="get">
+            <input name="q" type="text" placeholder="장비, 카테고리, 기사를 검색하세요" />
+            <button type="submit">검색</button>
+          </form>
+        </div>
+
+        <div class="right">
+          <!-- Top links (MyPage + inline login) -->
+          <ul class="top-links">
+            <li><a class="btn small" href="/mypage">마이페이지</a></li>
+            <li><a id="top-login-btn" class="btn primary" href="/login">로그인 / 회원가입</a></li>
+
+            <th:block th:if="${session.user == null}">
+              <li>
+                <form id="header-login" class="header-login-form" action="/login" method="post">
+                  <input type="text" name="username" placeholder="아이디" required />
+                  <input type="password" name="password" placeholder="비밀번호" required />
+                  <button type="submit" class="btn">로그인</button>
+                </form>
+
+                <!-- Signup inline inside the header login area. Uses native details/summary so no JS required. -->
+                <details class="signup-box">
+                  <summary class="signup-summary">회원가입</summary>
+                  <form action="/signup" method="post" class="header-signup-form">
+                    <input type="text" name="username" placeholder="아이디" required />
+                    <input type="email" name="email" placeholder="이메일 (선택)" />
+                    <input type="password" name="password" placeholder="비밀번호" required />
+                    <button type="submit" class="btn">회원가입</button>
+                  </form>
+                </details>
+              </li>
+            </th:block>
+
+            <th:block th:if="${session.user != null}">
+              <li><span class="user-name" th:text="${session.user.name}"></span></li>
+              <li><a class="btn outline" href="/logout">로그아웃</a></li>
+            </th:block>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div th:replace="~{::body}"></div>
+    </main>
+
+    <!-- No floating quick-login JS required; top header button links directly to /login -->
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div class="col">
+          <h4>gear</h4>
+          <p>취미 장비를 쉽게 고르는 가장 좋은 방법.</p>
+        </div>
+        <div class="col">
+          <h4>카테고리</h4>
+          <ul>
+            <li><a href="/category?name=camping">캠핑</a></li>
+            <li><a href="/category?name=hiking">등산</a></li>
+            <li><a href="/category?name=fishing">낚시</a></li>
+            <li><a href="/category?name=climbing">클라이밍</a></li>
+            <li><a href="/category?name=cycling">자전거</a></li>
+          </ul>
+        </div>
+        <div class="col">
+          <h4>회사</h4>
+          <ul>
+            <li><a href="#">회사 소개</a></li>
+            <li><a href="#">문의하기</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="container small">© 2025 gear. 모든 권리 보유.</div>
+    </footer>
+  </body>
+</html>

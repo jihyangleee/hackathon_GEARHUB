@@ -1,0 +1,52 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <title>Login</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <div class="auth-box">
+    <h1>로그인</h1>
+    <form action="/login" method="post" class="auth-form">
+      <div class="form-row">
+        <label>아이디</label>
+        <input type="text" name="username" required />
+      </div>
+      <div class="form-row">
+        <label>비밀번호</label>
+        <input type="password" name="password" required />
+      </div>
+      <div class="form-row">
+        <button type="submit" class="btn">로그인</button>
+      </div>
+    </form>
+    <div class="muted">계정이 없으신가요?
+      <!-- Inline signup toggle: shows signup form directly on the login page -->
+      <details class="signup-inline">
+        <summary class="signup-summary">회원가입</summary>
+        <form action="/signup" method="post" class="auth-form signup-inline-form" style="margin-top:0.6rem">
+          <div class="form-row">
+            <label>아이디</label>
+            <input type="text" name="username" required />
+          </div>
+          <div class="form-row">
+            <label>비밀번호</label>
+            <input type="password" name="password" required />
+          </div>
+          <div class="form-row">
+            <label>이름(표시명)</label>
+            <input type="text" name="name" />
+          </div>
+          <div class="form-row">
+            <button type="submit" class="btn">회원가입</button>
+          </div>
+        </form>
+      </details>
+    </div>
+  </div>
+  <div th:if="${error}">
+    <p class="error" th:text="${error}"></p>
+  </div>
+</body>
+</html>

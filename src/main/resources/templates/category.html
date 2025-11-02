@@ -1,0 +1,27 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <title th:text="${category.name} + ' - 기사 목록'">카테고리</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1 th:text="${category.name}">카테고리명</h1>
+    <p th:text="${category.description}"></p>
+
+    <section class="article-list">
+      <div th:if="${#lists.isEmpty(articles)}">등록된 글이 없습니다.</div>
+      <ul>
+        <li th:each="a : ${articles}">
+          <a th:href="@{'/article/' + ${a.slug}}">
+            <h3 th:text="${a.title}">제목</h3>
+            <p th:text="${a.description}">요약</p>
+            <small th:text="${a.author} + ' · ' + ${a.createdAt}"></small>
+          </a>
+        </li>
+      </ul>
+    </section>
+  </div>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <title>My Page</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <h1 th:text="${user.name} + '님의 마이페이지'"></h1>
+
+  <section class="my-info">
+    <h2>회원정보</h2>
+    <p>Username: <span th:text="${user.username}"></span></p>
+    <p>Display name: <span th:text="${user.name}"></span></p>
+  </section>
+
+  <section class="my-favorites">
+    <h2>즐겨찾기</h2>
+    <div th:if="${#lists.isEmpty(favorites)}">즐겨찾기 항목이 없습니다.</div>
+    <div th:each="f : ${favorites}">
+      <a th:href="@{/product/{id}(id=${f.product.id})}">
+        <span th:text="${f.product.title}"></span>
+      </a>
+      <form th:action="@{/favorite/toggle}" method="post" style="display:inline">
+        <input type="hidden" name="productId" th:value="${f.product.id}" />
+        <button type="submit">Remove</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="my-reviews">
+    <h2>내 리뷰</h2>
+    <div th:if="${#lists.isEmpty(myReviews)}">작성한 리뷰가 없습니다.</div>
+    <div th:each="r : ${myReviews}">
+      <a th:href="@{/product/{id}(id=${r.product.id})}" th:text="${r.product.title}"></a>
+      <div>
+        <strong th:text="${r.rating}"></strong>
+        <p th:text="${r.content}"></p>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <title>gear - 홈</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+
+  <section class="hero">
+    <div class="container hero-inner">
+      <h1>취미 장비,
+        <span>전문가가 골라드립니다</span>
+      </h1>
+      <p>취미별 장비를 한눈에 비교하고 빠르게 시작하세요.</p>
+    </div>
+  </section>
+
+  <section class="categories container">
+    <div class="grid-3">
+      <!-- Show top 3 categories as prominent cards -->
+      <div class="category-card" th:each="c,iterStat : ${categories}" th:if="${iterStat.index} &lt; 3">
+        <a th:href="@{'/category/' + ${c.slug}}">
+          <h3 th:text="${c.name}">카테고리</h3>
+          <p th:text="${c.description}">설명</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 주요 추천 장비 -->
+  <section class="container" style="padding:2.5rem 0;">
+    <h2>주요 추천 장비</h2>
+    <div class="grid-3 product-grid">
+      <div class="card" th:each="e : ${recommendations}">
+        <div class="equipment-card" style="flex-direction:column; align-items:flex-start;">
+          <div class="thumb" style="width:100%; height:160px; overflow:hidden; display:flex; align-items:center; justify-content:center; background:#f6f6f8; border-radius:8px;">
+            <img th:if="${e.imageUrl} != null" th:src="${e.imageUrl}" alt="" style="max-width:100%; max-height:100%; object-fit:contain" />
+          </div>
+          <div class="meta" style="margin-top:0.8rem;">
+            <h5 th:text="${e.name}">장비명</h5>
+            <p class="muted" th:text="${e.description}"></p>
+            <div class="price" th:text="${e.price} != null ? ${e.price} + '원' : ''" style="margin-top:0.6rem; font-weight:700; color:var(--accent);"></div>
+            <div class="buy-link mt-2">
+              <a th:href="${e.purchaseUrl}" target="_blank" rel="noopener noreferrer" class="btn" style="margin-top:0.6rem;">구매 링크 →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Fallback: if recommendations is empty, show popular articles instead -->
+    </div>
+  </section>
+
+  <!-- 최근 기사(간단 리스트) -->
+  <section class="product-list container">
+    <h2>최근 기사</h2>
+    <ul class="article-grid">
+      <li class="article-card card" th:each="a : ${articles}">
+        <a th:href="@{'/article/' + ${a.slug}}">
+          <h4 th:text="${a.title}">제목</h4>
+          <p class="muted" th:text="${a.description}"></p>
+        </a>
+      </li>
+    </ul>
+  </section>
+
+  <!-- Quick access removed: use header top button to go to /login -->
+
+</body>
+</html>

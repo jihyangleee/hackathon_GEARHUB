@@ -1,0 +1,187 @@
+:root{
+	--max-width:1200px;
+	--accent:#4f46e5; /* indigo-600 */
+	--accent-2:#06b6d4; /* teal */
+	--accent-dark:#3730a3;
+	--muted:#6b7280;
+	--muted-2:#9ca3af;
+	--bg:#f8fafc;
+	--card:#ffffff;
+	--radius:12px;
+	--shadow: 0 12px 36px rgba(2,6,23,0.06);
+	--glass: rgba(255,255,255,0.75);
+}
+
+/* Pretendard(한국어 UI에 예쁜 산세리프) 우선 로드, 보조로 Noto Sans KR 및 Inter 로드 */
+@import url('https://cdn.jsdelivr.net/npm/pretendard@1.3.6/dist/web/static/pretendard.css');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Inter:wght@300;400;600;700;800&display=swap');
+
+*{box-sizing:border-box}
+html,body{height:100%}
+/* 우선순위: Noto Sans KR (한글), Inter(영문), 시스템 산출물 */
+/* 폰트 우선순위: Pretendard -> Noto Sans KR -> Inter -> 시스템 */
+body { font-family: 'Pretendard', 'Noto Sans KR', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin: 0; padding: 0; background: linear-gradient(180deg,var(--bg),#ffffff); color:#0f172a; -webkit-font-smoothing:antialiased }
+
+/* 링크 스타일: 기본적으로 밑줄 제거, 호버 시 색상 강조 (밑줄 없음) */
+a, a:link, a:visited { text-decoration: none; color: inherit }
+a:hover, a:focus { color: var(--accent); outline: none }
+
+/* 카드 내부 링크은 색상 강조만 하고 레이아웃 이동을 줄이기 위해 transform 최소화 */
+.article-card a:hover { color: var(--accent); }
+.category-card a:hover { color: var(--accent); }
+.container { max-width: var(--max-width); margin: 0 auto; padding: 1.5rem; }
+
+/* Layout helpers */
+.row{ display:flex; gap:1.5rem; flex-wrap:wrap }
+.col-6{ flex:1 }
+
+/* Header */
+.site-header{ border-bottom:1px solid rgba(15,23,42,0.04); background:rgba(255,255,255,0.92); backdrop-filter: blur(4px); position:sticky; top:0; z-index:50 }
+.header-inner{ display:flex; align-items:center; gap:1rem; padding:0.65rem 0 }
+.left{ display:flex; align-items:center; gap:0.8rem }
+.logo{ font-weight:800; font-size:1.15rem; color:var(--accent); text-decoration:none; padding-right:0.5rem }
+.logo small{ display:block; font-weight:600; font-size:0.8rem; color:var(--muted-2) }
+
+/* Category shown as a lightweight select but styled like a simple text + caret (matches screenshot) */
+.category-select{ position:relative }
+.category-select select{ -webkit-appearance:none; appearance:none; border:0; background:transparent; padding:0.15rem 0.6rem 0.15rem 0; font-weight:600; color:var(--muted); cursor:pointer }
+.category-select::after{ content:'▾'; position:absolute; right:0; top:50%; transform:translateY(-50%); color:var(--muted-2); pointer-events:none }
+
+.center{ flex:1; display:flex; justify-content:center }
+/* Rounded search bar centered, wider on desktop, hidden on very small screens */
+.search-form{ width:520px; display:flex; gap:0.5rem; align-items:center }
+.search-form input{ flex:1; padding:0.6rem 0.9rem; border-radius:999px; border:1px solid rgba(15,23,42,0.08); background:#fff; box-shadow:none }
+.search-form input::placeholder{ color:var(--muted-2) }
+.search-form button{ padding:0.45rem 0.9rem; border-radius:999px; background:#fff; color:var(--muted); border:1px solid rgba(15,23,42,0.08); font-weight:600 }
+.search-form button:hover{ background:#fafafa; transform:none }
+
+.right{ display:flex; gap:0.6rem; align-items:center }
+.btn{ padding:0.45rem 0.85rem; background:transparent; color:var(--muted); border-radius:10px; text-decoration:none; display:inline-flex; align-items:center; gap:0.5rem; border:1px solid rgba(15,23,42,0.06) }
+.btn.primary{ background:#fff; color:var(--muted); border:1px solid rgba(15,23,42,0.08); font-weight:700 }
+.btn.outline{ background:transparent; color:var(--muted); border:1px solid rgba(15,23,42,0.12) }
+.user-name{ margin-right:0.5rem; color:var(--muted) }
+
+/* Header inline login & top links (kept available but minimized to match image) */
+.top-links{ display:flex; gap:0.6rem; align-items:center; list-style:none; margin:0; padding:0 }
+.top-links li{ display:flex; align-items:center }
+.btn.small{ padding:0.35rem 0.6rem; font-size:0.9rem }
+.header-login-form{ display:flex; gap:0.5rem; align-items:center; background:transparent; padding:0.2rem; border-radius:8px }
+.header-login-form input{ padding:0.4rem 0.6rem; border-radius:8px; border:1px solid rgba(15,23,42,0.08); width:130px; font-size:0.95rem; background:#fff }
+.header-login-form input::placeholder{ color:var(--muted-2) }
+.header-login-form button{ padding:0.4rem 0.6rem; border-radius:8px }
+
+@media(max-width:1000px){
+	.search-form{ width:360px }
+}
+@media(max-width:700px){
+	.center{ display:none }
+	.header-inner{ padding:0.4rem }
+}
+
+/* Signup box (details) used inside header */
+.signup-box{ margin-top:0.25rem }
+.signup-box summary{ cursor:pointer; font-weight:600; color:var(--accent); list-style:none }
+.signup-box[open] summary{ color:var(--accent-dark) }
+.header-signup-form{ display:flex; flex-direction:column; gap:0.45rem; margin-top:0.5rem }
+.header-signup-form input{ padding:0.45rem 0.6rem; border-radius:8px; border:1px solid rgba(15,23,42,0.08); background:#fff }
+.header-signup-form button{ align-self:flex-end; padding:0.45rem 0.8rem }
+
+/* small vertical nudge for the top-login button to match image spacing */
+.top-links li a.btn.primary { margin-top:4px }
+
+/* Hero */
+.hero{ padding:3.5rem 0 2rem; background:transparent; border-bottom:1px solid rgba(15,23,42,0.03) }
+.hero-inner{ text-align:center; max-width:900px; margin:0 auto }
+.hero h1{ font-size:2.6rem; margin:0; line-height:1.02; letter-spacing:-0.02em }
+.hero h1 span{ display:block; color:var(--accent); font-weight:800; font-size:3rem }
+.hero p{ color:var(--muted); margin-top:0.6rem; font-size:1.05rem }
+
+/* Categories */
+.categories{ padding:2.5rem 0 }
+.grid-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:1rem }
+.category-card{ background:var(--card); border-radius:var(--radius); padding:1.25rem; min-height:120px; border:1px solid rgba(15,23,42,0.03); box-shadow:var(--shadow); transition:transform .18s ease,box-shadow .18s ease }
+.category-card:hover{ transform:translateY(-6px); box-shadow:0 18px 40px rgba(15,23,42,0.06) }
+.category-card .kicker{ font-size:0.8rem; color:var(--muted-2); margin-bottom:0.5rem }
+.category-card h3{ margin:0 0 0.5rem; font-size:1.05rem }
+.category-card p{ margin:0; color:var(--muted); font-size:0.95rem }
+
+/* Article / Product list */
+.product-list h2{ margin:0 0 1rem; font-size:1.25rem }
+.article-list{ list-style:none; padding:0; margin:0 }
+.article-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; list-style:none; padding:0; margin:0 }
+.article-card{ padding:1rem; border-radius:10px; transition:transform .12s ease, box-shadow .12s ease; border:1px solid rgba(15,23,42,0.03); background:var(--card) }
+.article-card:hover{ transform:translateY(-6px); box-shadow:0 16px 40px rgba(2,6,23,0.06) }
+.article-card h4{ margin:0 0 0.35rem }
+.article-card p{ margin:0; color:var(--muted); font-size:0.95rem }
+
+@media(max-width:900px){
+	.article-grid{ grid-template-columns:1fr }
+}
+
+/* Product detail */
+.product-detail{ display:flex; gap:2rem; padding:2rem 0; flex-wrap:wrap }
+.product-detail img{ width:320px; max-width:100%; border-radius:12px; box-shadow:0 12px 36px rgba(2,6,23,0.06) }
+
+.article-detail{ max-width:780px; margin:0 auto; padding:3rem 0 }
+.article-detail .meta{ color:var(--muted); font-size:0.95rem; margin-bottom:1rem }
+.article-detail .content{ line-height:1.85; color:#0f172a; font-size:1.03rem }
+
+/* Summary card shown above article content */
+.summary-card{ background:linear-gradient(90deg, rgba(79,70,229,0.06), rgba(6,182,212,0.03)); border-left:4px solid var(--accent); padding:1rem 1.25rem; border-radius:8px; margin-bottom:1rem; color:var(--muted); font-style:italic }
+
+.summary-card strong{ color:var(--accent-dark); font-style:normal }
+
+.related-equipment{ margin-top:2rem }
+.equipment-card{ display:flex; gap:1rem; align-items:flex-start; background:var(--card); border-radius:10px; padding:1rem; border:1px solid rgba(15,23,42,0.03); box-shadow:0 10px 30px rgba(2,6,23,0.05); transition:transform .18s ease,box-shadow .18s ease }
+.equipment-card:hover{ transform:translateY(-6px); box-shadow:0 20px 48px rgba(2,6,23,0.08) }
+.equipment-card img{ width:160px; height:110px; object-fit:cover; border-radius:10px }
+.equipment-card .meta{ font-size:0.95rem }
+.equipment-card .meta h5{ margin:0 0 0.4rem }
+.equipment-card .meta .price{ color:var(--accent); font-weight:700 }
+
+/* Cards */
+.card{ background:var(--card); border-radius:12px; padding:1rem; border:1px solid rgba(15,23,42,0.03); box-shadow:var(--shadow) }
+
+/* Forms */
+form{ display:block }
+label{ display:block; margin-bottom:0.35rem; color:var(--muted); font-size:0.95rem }
+input[type="text"], input[type="email"], input[type="password"], textarea, select{
+	width:100%; padding:0.65rem 0.8rem; border-radius:8px; border:1px solid rgba(15,23,42,0.06); background:#fff; font-size:0.97rem; outline:none; transition:box-shadow .12s ease,border-color .12s ease }
+input:focus, textarea:focus, select:focus{ box-shadow:0 6px 18px rgba(79,70,229,0.06); border-color:rgba(79,70,229,0.4) }
+button[type="submit"], .btn{ cursor:pointer; transition:transform .12s ease, box-shadow .12s ease }
+.btn:hover{ transform:translateY(-3px); box-shadow:0 12px 30px rgba(15,23,42,0.08) }
+
+.form-row{ display:flex; gap:1rem; flex-wrap:wrap }
+.form-actions{ margin-top:1rem }
+
+.search-bar{ margin:1rem 0 }
+.error{ color:#dc2626 }
+
+/* Footer */
+.site-footer{ margin-top:3rem; background:transparent; border-top:1px solid rgba(15,23,42,0.03); padding:2rem 0 }
+.footer-inner{ display:flex; gap:2rem; flex-wrap:wrap }
+.footer-inner .col{ flex:1; min-width:180px }
+.footer-inner h4{ margin:0 0 0.5rem }
+.small{ padding-top:1rem; color:#9ca3af; font-size:0.9rem }
+
+/* subtle utility for highlighted text */
+.highlight{ background:linear-gradient(90deg, rgba(79,70,229,0.08), rgba(6,182,212,0.02)); padding:0.15rem 0.35rem; border-radius:6px }
+
+/* Responsive tweaks */
+@media(max-width:1000px){
+	.grid-3, .product-grid{ grid-template-columns:repeat(2,1fr) }
+	.search-form{ width:90% }
+}
+@media(max-width:700px){
+	.grid-3, .product-grid{ grid-template-columns:1fr }
+	.center{ display:none }
+	.header-inner{ padding:0.5rem }
+	.product-detail{ flex-direction:column }
+}
+
+/* Small utilities */
+.muted{ color:var(--muted) }
+.text-center{ text-align:center }
+.mt-2{ margin-top:0.5rem }
+.mt-4{ margin-top:1rem }
+.mb-2{ margin-bottom:0.5rem }
